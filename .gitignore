@@ -1,0 +1,5 @@
+composer.lock
+examples/settings.php
+vendor
+.phpunit.cache
+tmp
