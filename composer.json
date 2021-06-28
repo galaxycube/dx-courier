@@ -1,14 +1,14 @@
 {
-    "name": "maticmedia/dx-couriers",
+    "name": "galaxycube/dx-courier",
     "type": "library",
     "description": "DX API Wrapper",
     "keywords": ["dx couriers"],
     "license": "MIT",
     "authors": [
         {
-            "name": "Alexandr",
-            "email": "alexandr@maticmedia.co.uk",
-            "homepage": "https://maticmedia.co.uk",
+            "name": "Robert McCombe",
+            "email": "me@robertmccombe.com",
+            "homepage": "https://robertmccombe.com",
             "role": "Developer"
         }
     ],
@@ -21,6 +21,7 @@
         "psr-4": {"Dx\\": "tests/Dx"}
     },
     "require": {
+        "php": ">=7.4",
         "psr/simple-cache": "^1.0",
         "guzzlehttp/guzzle": "7.0"
     },
