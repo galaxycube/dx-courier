@@ -17,14 +17,13 @@ class DxHelper
      * @param $sessionKey
      * @param string $command
      * @param array $post
+     * @param bool $enableTesting
      * @return array|bool|float|int|object|string|null
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \GuzzleHttp\Exception\GuzzleException|InvalidSessionKey
      */
-    public static function callApi(string $sessionKey, string $command, array $post )
+    public static function callApi(string $sessionKey, string $command, array $post, bool $enableTesting = false)
     {
-
         if (empty($sessionKey)) {
-
             throw new InvalidSessionKey('Error');
         }
 
@@ -37,10 +36,13 @@ class DxHelper
             ]
         );
 
-        $r = $client->post('http://itd.dx-track.com/DespatchManager.API.Service.DM6Lite_Test/DM6LiteService.svc/' . $command, [
+        $url = 'https://dx-track.com/DespatchManager.API.Service.DM6Lite/DM6LiteService.svc/';
+        if($enableTesting) {
+            $url = 'http://itd.dx-track.com/DespatchManager.API.Service.DM6Lite_Test/DM6LiteService.svc/';
+        }
 
+        $r = $client->post($url . $command, [
             'json' => $post
-            //RequestOptions::JSON => \GuzzleHttp\json_encode($post)
         ]);
 
         return \GuzzleHttp\json_decode($r->getBody());

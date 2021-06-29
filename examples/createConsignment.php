@@ -8,7 +8,7 @@ require_once ('settings.php');
 use Dx\Models\Consignment;
 
 // create session key
-$application = new Dx\Application(DX_ACCOUNT_NUMBER, DX_SERVICE_CENTER, DX_PASSWORD);
+$application = new Dx\Application(DX_ACCOUNT_NUMBER, DX_SERVICE_CENTER, DX_PASSWORD, true);
 
 // new Consignment
 $consignment = new Consignment($application);
@@ -59,7 +59,7 @@ $label = $consignment->getLabels();
 echo "\nGet the labels.\n";
 
 
-$myfile = fopen("text.pdf", "w");
+$myfile = fopen("text.pdf", "wb");
 fwrite($myfile, $label->getContents());
 fclose($myfile);
 

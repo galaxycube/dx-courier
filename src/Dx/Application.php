@@ -36,15 +36,21 @@ class Application
     private string $_sessionKey;
 
     /**
+     * @var bool sets whether the application is in testing mode or not
+     */
+    private bool $_isTesting;
+
+    /**
      * @var CacheInterface
      */
     private CacheInterface $_cache;
 
-    public function __construct(string $accountNumber, string $serviceCenter, string $password, CacheInterface $cache = null)
+    public function __construct(string $accountNumber, string $serviceCenter, string $password, bool $isTesting = false, CacheInterface $cache = null)
     {
         $this->_accountNumber = $accountNumber;
         $this->_serviceCenter = $serviceCenter;
         $this->_password = $password;
+        $this->_isTesting = $isTesting;
 
         if ($cache !== null) {
             $this->_cache = $cache;
@@ -197,7 +203,7 @@ class Application
          * }
          */
         // call
-        $response = DxHelper::callApi($this->getSessionKey(), 'AddConsignment', $post);
+        $response = DxHelper::callApi($this->getSessionKey(), 'AddConsignment', $post, $this->_isTesting);
 
         if (isset($response->Status) && $response->Status !== 0) {
 
@@ -234,7 +240,7 @@ class Application
         ];
 
         // call
-        $response = DxHelper::callApi($this->getSessionKey(), 'ReleaseConsignment', $post);
+        $response = DxHelper::callApi($this->getSessionKey(), 'ReleaseConsignment', $post, $this->_isTesting);
 
         if (isset($response->Status) && $response->Status !== 0) {
 
@@ -261,7 +267,7 @@ class Application
         ];
 
         // call
-        $response = DxHelper::callApi($this->getSessionKey(), 'GetConsignmentTrackingInfo', $post);
+        $response = DxHelper::callApi($this->getSessionKey(), 'GetConsignmentTrackingInfo', $post, $this->_isTesting);
 
         print_r($response);
 
@@ -313,14 +319,12 @@ class Application
             "RoutingStream" => $consignment->getRoutingStream()
         ];
 
-        $response = DxHelper::callApi($this->getSessionKey(), 'GetLabels', $post);
+        $response = DxHelper::callApi($this->getSessionKey(), 'GetLabels', $post, $this->_isTesting);
 
         if (isset($response->Status) && $response->Status !== 0) {
 
             throw new BadRequest($response->Status, isset($response->StatusMessage) ? $response->StatusMessage : null);
         }
-
-
 
         if (isset($response->label)) {
 
@@ -336,5 +340,6 @@ class Application
             return $label;
         }
 
+        throw new InvalidLabelRequest('Label not returned');
     }
 }
