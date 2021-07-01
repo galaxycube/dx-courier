@@ -112,7 +112,7 @@ class Application
         if (empty($this->_sessionKey)) {
             $sessionKey = $this->getCache(self::CACHE_SESSION_KEY);
             if (!$sessionKey) { //if session key is false then use API to get session key
-                $sessionKey = new SessionKey($this->_accountNumber, $this->_serviceCenter, $this->_password);
+                $sessionKey = new SessionKey($this->_accountNumber, $this->_serviceCenter, $this->_password, $this->_isTesting);
                 $this->_sessionKey = $sessionKey->getSessionKey(); //@todo throws error on failure
                 $this->updateSessionKeyCache(); //update the timeout on the session key in the cache
             } else {

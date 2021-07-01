@@ -21,6 +21,8 @@ class SessionKey
 
     private string $_sessionKey;
 
+    private bool $_isTesting;
+
 
     /**
      * SessionKey constructor.
@@ -31,7 +33,7 @@ class SessionKey
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws InvalidSessionKey
      */
-    public function __construct(string $accountNumber, string $serviceCenter, string $password)
+    public function __construct(string $accountNumber, string $serviceCenter, string $password, bool $isTesting = false)
     {
         if (empty($accountNumber) || empty($serviceCenter) || empty($password)) {
             throw new InvalidLoginCredentials();
@@ -40,6 +42,7 @@ class SessionKey
         $this->_accountNumber = $accountNumber;
         $this->_serviceCenter = $serviceCenter;
         $this->_password = $password;
+        $this->_isTesting = $isTesting;
         $this->getSessionKey();
     }
 
@@ -56,8 +59,13 @@ class SessionKey
         //Guzzle client
         $client = new Client();
 
+        $url = 'https://dx-track.com/DespatchManager.API.Service.DM6Lite/DM6LiteService.svc/';
+        if($this->_isTesting) {
+            $url = 'http://itd.dx-track.com/DespatchManager.API.Service.DM6Lite_Test/DM6LiteService.svc/';
+        }
+
         // login
-        $r = $client->post('http://itd.dx-track.com/DespatchManager.API.Service.DM6Lite_Test/DM6LiteService.svc/GetSessionKey', [
+        $r = $client->post($url . 'GetSessionKey', [
             RequestOptions::JSON => [
                 'DXAccountNumber' => $this->_accountNumber,
                 'OrigServiceCentre' => $this->_serviceCenter,
