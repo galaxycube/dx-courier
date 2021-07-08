@@ -4,7 +4,7 @@ PHP SDK Wrapper Library for  [DX Couriers](https://www.dxdelivery.com/) REST API
 
 Right now it allows you to CREATE, GET LABEL, AMEND (date only) and DELETE consignments.
 
-Currently DX's REST API doesn't include functionality for live tracking or webhooks.  I'll be adding this in after having some real world data by wrapping their front end tracking systems.
+Currently DX's REST API doesn't include functionality for live tracking or webhooks.  This has been added by wrapping their front end tracking systems.
 
 It's been tested with Mainland U.K addresses only just now. 
 

@@ -27,6 +27,11 @@ class Consignment
     const SERVICE_2MAN_COLLECTION_STANDARD = 'C2';
     const SERVICE_2MAN_COLLECTION_SATURDAY = 'CS';
 
+    const STATUS_AWAITING_PICKUP = 1;
+    const STATUS_IN_TRANSIT = 2;
+    const STATUS_OUT_FOR_DELIVERY = 3;
+    const STATUS_DELIVERED = 4;
+
     private Application $_application;
     private \DateTime $_manifestDate;
     private string $_consignmentReference;
@@ -40,6 +45,12 @@ class Consignment
     private string $_consignmentNumber;
     private string $_routingStream;
     private Label $_labels;
+    private int $_status = self::STATUS_AWAITING_PICKUP;
+
+    /**
+     * @var Logs Represents the status logs of the consignment
+     */
+    private Logs $logs;
 
     /**
      * Consignment constructor.
@@ -48,6 +59,42 @@ class Consignment
         $this->_application = $_application;
         $this->_packages = new Packages();
         $this->_manifestDate = new \DateTime();
+    }
+
+    /**
+     * @return Logs
+     */
+    public function getLogs(): Logs
+    {
+        return $this->logs;
+    }
+
+    /**
+     * @param Logs $logs
+     * @return Application
+     */
+    public function setLogs(Logs $logs): Consignment
+    {
+        $this->logs = $logs;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus(): int
+    {
+        return $this->_status;
+    }
+
+    /**
+     * @param int $status
+     * @return Consignment
+     */
+    public function setStatus(int $status): Consignment
+    {
+        $this->_status = $status;
+        return $this;
     }
 
     /**

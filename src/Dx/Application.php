@@ -11,6 +11,9 @@ use Dx\Models\Consignment;
 use Dx\Models\DxHelper;
 use Dx\Models\SessionKey;
 use Dx\Models\Consignment\Label;
+use Dx\Helpers\TrackingParserHelper;
+use GuzzleHttp\Client;
+
 use Psr\SimpleCache\CacheInterface;
 
 class Application
@@ -207,8 +210,6 @@ class Application
 
         if (isset($response->Status) && $response->Status !== 0) {
 
-            //print_r($response);
-
             throw new BadRequest($response->Status, isset($response->StatusMessage) ? $response->StatusMessage : null);
         }
 
@@ -257,20 +258,43 @@ class Application
      */
     public function trackConsignment(Consignment $consignment): Consignment
     {
-        if (!$consignment->getConsignmentNumber() || !$consignment->getRoutingStream()) {
-            throw new InvalidConsignment('Cannot track consignment without consignment number or routing stream reference');
+        if (!$consignment->getConsignmentNumber() || !$consignment->getDeliveryAddress()->getPostcode()) {
+            throw new InvalidConsignment('Cannot track consignment without consignment number or delivery postcode');
         }
 
-        $post = [
-            "ConsignmentNumber" => $consignment->getConsignmentNumber(),
-            "RoutingStream" => $consignment->getRoutingStream()
-        ];
+        //Guzzle client
+        $client = new Client(
+            array(
+                // turn off SSL
+                'curl' => array(CURLOPT_SSL_VERIFYPEER => false, CURLOPT_SSL_VERIFYHOST => false),
+                'allow_redirects' => true,
+                'cookies' => true,
+                'verify' => false
+            )
+        );
 
-        // call
-        $response = DxHelper::callApi($this->getSessionKey(), 'GetConsignmentTrackingInfo', $post, $this->_isTesting);
+        // Request
+        $this->response = $client->get('https://dx-track.com/track/dx.aspx?consno=' . $consignment->getConsignmentNumber() . '&postcode=' . $consignment->getDeliveryAddress()->getPostcode());
 
-        print_r($response);
+        $response = $this->response->getBody();
 
+        $parser = new TrackingParserHelper($response);
+        $logs = $parser->getLogs();
+
+        //check the size of the logs
+        if (count($logs) < 1) {
+            //no logs so lets set status as awaiting pickup
+            $consignment->setStatus(Consignment::STATUS_AWAITING_PICKUP);
+            return $consignment;
+        }
+
+        $logs->sortByDate(\Dx\Models\Logs::SORT_DESC);
+
+        //get the most recent log
+        $status = $logs[0]->getStage();
+        $consignment->setStatus($parser->getParsedStatus($status));
+
+        $consignment->setLogs($logs);
         return $consignment;
     }
 
@@ -343,3 +367,5 @@ class Application
         throw new InvalidLabelRequest('Label not returned');
     }
 }
+
+
