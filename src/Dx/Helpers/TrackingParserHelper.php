@@ -22,15 +22,21 @@ class TrackingParserHelper
      */
     public function __construct(string $html)
     {
+        $logs = new \Dx\Models\Logs();
+        $this->_logs = $logs;
         $dom = new \DOMDocument();
 
         @$dom->loadHTML($html);
         $dom->preserveWhiteSpace = false;
-        $tables = $dom->getElementsByTagName('table')->item(2); // 3rd table
+        $tables = $dom->getElementsByTagName('table');
+        if($tables->count() < 3) {
+            return $logs;
+        }
+
+        $tables = $tables->item(2); // 3rd table
 
         //get all rows from the table
         $rows = $tables->getElementsByTagName('tr');
-        $logs = new \Dx\Models\Logs();
 
         // loop over the table rows
         foreach ($rows as $i => $row) {

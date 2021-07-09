@@ -280,6 +280,7 @@ class Application
 
         $parser = new TrackingParserHelper($response);
         $logs = $parser->getLogs();
+        $consignment->setLogs($logs);
 
         //check the size of the logs
         if (count($logs) < 1) {
@@ -294,7 +295,6 @@ class Application
         $status = $logs[0]->getStage();
         $consignment->setStatus($parser->getParsedStatus($status));
 
-        $consignment->setLogs($logs);
         return $consignment;
     }
 
@@ -367,5 +367,3 @@ class Application
         throw new InvalidLabelRequest('Label not returned');
     }
 }
-
-
