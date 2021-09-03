@@ -88,5 +88,7 @@ class TrackingParserHelper
                     return $statusType;
             }
         }
+
+        return 0;
     }
 }
