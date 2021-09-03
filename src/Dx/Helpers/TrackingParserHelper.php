@@ -89,6 +89,6 @@ class TrackingParserHelper
             }
         }
 
-        return 0;
+        return Consignment::STATUS_AWAITING_PICKUP;
     }
 }
