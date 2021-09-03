@@ -70,13 +70,14 @@ class TrackingParserHelper
      * Gets the status code from the stage string
      * @param string $stage text representing the status
      * @return int the status code
+     * @throws \Exception
      */
     public function getParsedStatus(string $stage): int
     {
         $stages = array(
             Consignment::STATUS_AWAITING_PICKUP => ['Scan at collection','Order'],
             Consignment::STATUS_IN_TRANSIT => ['Scan at delivery'],
-            Consignment::STATUS_OUT_FOR_DELIVERY => ['Scanned'],
+            Consignment::STATUS_OUT_FOR_DELIVERY => ['Scanned','out for delivery'],
             Consignment::STATUS_DELIVERED => ['delivered']
         );
 
@@ -84,11 +85,12 @@ class TrackingParserHelper
         {
             foreach($keywords as $keyword)
             {
-                if(strpos($stage, $keyword) !== false)
+                if(strpos($stage, $keyword) !== false) {
                     return $statusType;
+                }
             }
         }
 
-        return Consignment::STATUS_AWAITING_PICKUP;
+        throw new \Exception('No matching status type for stage - ' . $stage);
     }
 }

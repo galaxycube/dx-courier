@@ -10,9 +10,9 @@ $deliveryAddress->setPostcode(DX_CONSIGNMENT_EXAMPLE['postcode']);
 $consignment->setDeliveryAddress($deliveryAddress);
 
 $consignment->track();
-echo $consignment->getStatus() . '<br />';
+echo 'Status = ' . $consignment->getStatus() . '<br />' . "\n";
 foreach($consignment->getLogs() as $log) {
-    echo $log->getStage() . '<br />';
+    echo $log->getStage() . '<br />' . "\n";
 }
 
 $consignment = new \Dx\Models\Consignment($application);
